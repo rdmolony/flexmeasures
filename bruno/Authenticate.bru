@@ -1,0 +1,22 @@
+meta {
+  name: Authenticate
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/requestAuthToken
+  body: json
+  auth: basic
+}
+
+body:json {
+  {
+    "email": "toy-user@flexmeasures.io",
+    "password": "toy-password"
+  }
+}
+
+vars:post-response {
+  bearerToken: res.body.auth_token
+}
