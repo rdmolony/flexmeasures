@@ -511,8 +511,15 @@ def add_source(name: str, model: str, version: str, source_type: str):
     help="Cumulative probability in the range [0, 1].",
 )
 @click.option(
+    "--date-format",
+    type=str,
+    default=r"%Y-%m-%d %H:%M:%s",
+    help="Format to use for parsing dates when used in conjunction with parse_dates."
+    "The strftime to parse time, e.g. \"%d/%m/%Y\"."
+    "See strftime documentation for more information on choices",
+)
+@click.option(
     "--resample/--do-not-resample",
-    default=True,
     help="Resample the data to fit the sensor's event resolution. "
     " Only downsampling is currently supported (for example, from hourly to daily data).",
 )
@@ -621,6 +628,7 @@ def add_beliefs(
     unit: str | None = None,
     horizon: int | None = None,
     cp: float | None = None,
+    date_format: str | None = None,
     resample: bool = True,
     allow_overwrite: bool = False,
     skiprows: int = 1,
@@ -659,6 +667,7 @@ def add_beliefs(
 
     # Set up optional parameters for read_csv
     if file.split(".")[-1].lower() == "csv":
+        kwargs["date_format"] = date_format
         kwargs["infer_datetime_format"] = True
         kwargs["delimiter"] = delimiter
         kwargs["decimal"] = decimal
@@ -678,6 +687,19 @@ def add_beliefs(
     filter_by_column = (
         dict(zip(filter_columns, filter_values)) if filter_columns else None
     )
+    
+    sample_timestamp_str = pd.read_csv(file, skiprows=1, nrows=1, header=None).iloc[0,0]
+    try:
+        datetime.strptime(sample_timestamp_str, datetime_format)
+    except Exception as e:
+        raise ValueError(
+            f"The timestamps in '{file}' do not match the expected date_format '{date_format}'"
+            " Please specify another --datetime-format"
+            " Example: 31/01/22 23:59:59 = %d/%m/%y %H:%M:%S"
+            " For more information see"
+            " https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior"
+        ) from e
+    
     bdf = tb.read_csv(
         file,
         sensor,
@@ -690,7 +712,7 @@ def add_beliefs(
         usecols=[datecol, valuecol]
         if beliefcol is None
         else [datecol, beliefcol, valuecol],
-        parse_dates=True,
+        parse_dates=[datecol],
         na_values=na_values,
         keep_default_na=keep_default_na,
         timezone=timezone,
