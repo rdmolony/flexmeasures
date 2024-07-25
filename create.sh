@@ -109,6 +109,12 @@ curl \
 # Create Sensors
 # --------------
 
+# ************************************************
+# NOTE:
+# event_resolution = time interval between beliefs
+# PT1H = hourly 
+# ************************************************
+
 # Sensor = ElectricityPrices
 # Asset = Site
 curl \
@@ -117,6 +123,7 @@ curl \
   --data '
   {
       "name": "price",
+      "event_resolution": "PT1H",
       "unit": "EUR/MWh",
       "generic_asset_id": 1
   }' \
@@ -130,7 +137,7 @@ curl \
   --data '
   {
     "name": "power",
-    "event_resolution": "PT24H",
+    "event_resolution": "PT1H",
     "unit": "MW",
     "generic_asset_id": 2
   }' \
@@ -144,7 +151,7 @@ curl \
   --data '
   {
     "name": "power",
-    "event_resolution": "PT24H",
+    "event_resolution": "PT1H",
     "unit": "MW",
     "generic_asset_id": 3
   }' \
@@ -158,7 +165,7 @@ curl \
   --data '
   {
       "name": "discharging",
-      "event_resolution": "PT24H",
+      "event_resolution": "PT1H",
       "unit": "MW",
       "generic_asset_id": 1,
       "event_resolution": "P1D"
