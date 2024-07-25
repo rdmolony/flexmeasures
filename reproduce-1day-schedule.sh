@@ -23,7 +23,7 @@ flexmeasures add initial-structure
 # -------
 
 START=2023-01-01T00:00:00+00:00
-DURATION=PT24H
+DURATION=PT24H # 1 Day
 
 
 # Authenticate
@@ -126,7 +126,7 @@ curl \
   --data '
   {
       "name": "night/day tarriff",
-      "event_resolution": "PT1H",
+      "event_resolution": "PT15M",
       "unit": "EUR/MWh",
       "generic_asset_id": 4
   }' \
@@ -155,7 +155,7 @@ curl \
   --data '
   {
     "name": "power",
-    "event_resolution": "PT1H",
+    "event_resolution": "PT15M",
     "unit": "MW",
     "generic_asset_id": 2
   }' \
@@ -169,7 +169,7 @@ curl \
 #   --data '
 #   {
 #     "name": "power",
-#     "event_resolution": "PT1H",
+#     "event_resolution": "PT15M",
 #     "unit": "MW",
 #     "generic_asset_id": 1
 #   }' \
