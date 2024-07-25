@@ -22,8 +22,8 @@ flexmeasures add initial-structure
 # Globals
 # -------
 
-export START=2023-01-01T00:00:00+00:00
-export DURATION=PT24H
+START=2023-01-01T00:00:00+00:00
+DURATION=PT24H
 
 
 # Authenticate
@@ -147,6 +147,20 @@ curl \
   }' \
   http://localhost:5000/api/v3_0/sensors
 
+# Sensor = SolarGeneration
+# Asset = Solar
+curl \
+  --header "Content-Type: application/json" \
+  --header "Authorization: $TOKEN" \
+  --data '
+  {
+    "name": "power",
+    "event_resolution": "PT1H",
+    "unit": "MW",
+    "generic_asset_id": 2
+  }' \
+  http://localhost:5000/api/v3_0/sensors
+
 # # Sensor = BuildingDemand
 # # Asset = Building
 # curl \
@@ -158,20 +172,6 @@ curl \
 #     "event_resolution": "PT1H",
 #     "unit": "MW",
 #     "generic_asset_id": 1
-#   }' \
-#   http://localhost:5000/api/v3_0/sensors
-
-# # Sensor = SolarGeneration
-# # Asset = Solar
-# curl \
-#   --header "Content-Type: application/json" \
-#   --header "Authorization: $TOKEN" \
-#   --data '
-#   {
-#     "name": "power",
-#     "event_resolution": "PT1H",
-#     "unit": "MW",
-#     "generic_asset_id": 2
 #   }' \
 #   http://localhost:5000/api/v3_0/sensors
 
@@ -191,27 +191,27 @@ flexmeasures show beliefs \
   --start $START \
   --duration $DURATION
 
+# Sensor = SolarGeneration
+flexmeasures add beliefs ./mean_solar.csv \
+  --sensor 3 \
+  --source rowan \
+  --unit MW \
+  --timezone Europe/Dublin 
+# Plot ->
+flexmeasures show beliefs \
+  --sensor 3 \
+  --start $START \
+  --duration $DURATION
+
 # # Sensor = BuildingDemand
 # flexmeasures add beliefs ./demand.csv \
-#   --sensor 2 \
+#   --sensor 4 \
 #   --source rowan \
 #   --unit MW \
 #   --timezone Europe/Dublin 
 # # Plot ->
 # flexmeasures show beliefs \
 #   --sensor 2 \
-#   --start $START \
-#   --duration $DURATION
-
-# # Sensor = SolarGeneration
-# flexmeasures add beliefs ./mean_solar.csv \
-#   --sensor 3 \
-#   --source rowan \
-#   --unit MW \
-#   --timezone Europe/Dublin 
-# # Plot ->
-# flexmeasures show beliefs \
-#   --sensor 3 \
 #   --start $START \
 #   --duration $DURATION
 
@@ -219,9 +219,12 @@ flexmeasures show beliefs \
 # Schedule the Battery
 # --------------------
 
+# --consumption-price-sensor = ElectricityPrices
+# --inflexible-device-sensor = SolarGeneration
 flexmeasures add schedule for-storage \
     --sensor 2 \
     --consumption-price-sensor 1 \
+    --inflexible-device-sensor 3 \
     --start $START \
     --duration $DURATION \
     --soc-at-start 50% \
