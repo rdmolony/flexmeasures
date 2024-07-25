@@ -22,8 +22,8 @@ flexmeasures add initial-structure
 # Globals
 # -------
 
-START=2023-01-01T00:00:00+00:00
-DURATION=PT24H
+export START=2023-01-01T00:00:00+00:00
+export DURATION=PT24H
 
 
 # Authenticate
@@ -88,61 +88,50 @@ curl \
     "account_id": 1,
     "parent_asset_id": 1,
     "latitude": 53.3498,
-    "longitude": 6.2603
+    "longitude": 6.2603,
+    "attributes": "{\"capacity_in_mw\": 1.5, \"min_soc_in_mwh\": 0.15, \"max_soc_in_mwh\": 1.35}"
   }' \
   http://localhost:5000/api/v3_0/assets
+
+
+# Create TransmissionZone Asset
+# -----------------------------
+
+# ********************************************************************
+# FlexMeasures doesn't ship with a 'TransmissionZone' Asset by default
+# ********************************************************************
+
+flexmeasures add asset-type \
+  --name "name" \
+  --description "A grid regulated & balanced as a whole, usually a national grid."
+
+flexmeasures add asset \
+  --name "IRL transmission zone" \
+  --asset-type 8
 
 
 # Create Sensors
 # --------------
 
 # ************************************************
-# NOTE:
 # event_resolution = time interval between beliefs
 # PT1H = hourly 
 # ************************************************
 
 # Sensor = ElectricityPrices
-# Asset = Building
+# Asset = TransmissionZone
 curl \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
   {
-      "name": "price",
+      "name": "night/day tarriff",
       "event_resolution": "PT1H",
       "unit": "EUR/MWh",
-      "generic_asset_id": 1
+      "generic_asset_id": 4
   }' \
   http://localhost:5000/api/v3_0/sensors
 
-# Sensor = BuildingDemand
-# Asset = Building
-curl \
-  --header "Content-Type: application/json" \
-  --header "Authorization: $TOKEN" \
-  --data '
-  {
-    "name": "power",
-    "event_resolution": "PT1H",
-    "unit": "MW",
-    "generic_asset_id": 1
-  }' \
-  http://localhost:5000/api/v3_0/sensors
-
-# Sensor = SolarGeneration
-# Asset = Solar
-curl \
-  --header "Content-Type: application/json" \
-  --header "Authorization: $TOKEN" \
-  --data '
-  {
-    "name": "power",
-    "event_resolution": "PT1H",
-    "unit": "MW",
-    "generic_asset_id": 2
-  }' \
-  http://localhost:5000/api/v3_0/sensors
 
 # Sensor = BatteryDischarge
 # Asset = Battery
@@ -154,11 +143,37 @@ curl \
       "name": "discharging",
       "event_resolution": "PT15M",
       "unit": "MW",
-      "generic_asset_id": 3,
-      "event_resolution": "P1D",
-      "attributes": "{\"capacity_in_mw\": 1.5, \"min_soc_in_mwh\": 0.15, \"max_soc_in_mwh\": 1.35}"
+      "generic_asset_id": 3
   }' \
   http://localhost:5000/api/v3_0/sensors
+
+# # Sensor = BuildingDemand
+# # Asset = Building
+# curl \
+#   --header "Content-Type: application/json" \
+#   --header "Authorization: $TOKEN" \
+#   --data '
+#   {
+#     "name": "power",
+#     "event_resolution": "PT1H",
+#     "unit": "MW",
+#     "generic_asset_id": 1
+#   }' \
+#   http://localhost:5000/api/v3_0/sensors
+
+# # Sensor = SolarGeneration
+# # Asset = Solar
+# curl \
+#   --header "Content-Type: application/json" \
+#   --header "Authorization: $TOKEN" \
+#   --data '
+#   {
+#     "name": "power",
+#     "event_resolution": "PT1H",
+#     "unit": "MW",
+#     "generic_asset_id": 2
+#   }' \
+#   http://localhost:5000/api/v3_0/sensors
 
 
 # Create DataSource
@@ -205,7 +220,7 @@ flexmeasures show beliefs \
 # --------------------
 
 flexmeasures add schedule for-storage \
-    --sensor 4 \
+    --sensor 2 \
     --consumption-price-sensor 1 \
     --start $START \
     --duration $DURATION \
@@ -213,6 +228,6 @@ flexmeasures add schedule for-storage \
     --roundtrip-efficiency 90%
 # Plot ->
 flexmeasures show beliefs \
-  --sensor 4 \
+  --sensor 2 \
   --start $START \
   --duration $DURATION
