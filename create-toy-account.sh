@@ -1,12 +1,15 @@
 flexmeasures db-ops reset
 
+# Globals
+# -------
+TOMORROW=$(date --date="next day" '+%Y-%m-%d')
+
 
 # Setup
 # -----
 
 flexmeasures add toy-account --kind battery
 
-TOMORROW=$(date --date="next day" '+%Y-%m-%d')
 echo "Hour,Price
 ${TOMORROW}T00:00:00,10
 ${TOMORROW}T01:00:00,11
