@@ -23,7 +23,7 @@ flexmeasures add initial-structure
 # -------
 
 START=2023-01-01T00:00:00+00:00
-DURATION=PT24H # 1 Day
+DURATION=P7D # 7 Days
 
 
 # Authenticate
@@ -184,7 +184,9 @@ flexmeasures add beliefs ./fixed_price_feed_in.csv \
   --sensor 1 \
   --source rowan \
   --unit EUR/MWh \
-  --timezone Europe/Dublin
+  --timezone Europe/Dublin \
+  --do-not-resample \
+  --date-format "%d/%m/%Y %H:%M"
 # Plot ->
 flexmeasures show beliefs \
   --sensor 1 \
@@ -196,7 +198,9 @@ flexmeasures add beliefs ./mean_solar.csv \
   --sensor 3 \
   --source rowan \
   --unit MW \
-  --timezone Europe/Dublin 
+  --timezone Europe/Dublin \
+  --do-not-resample \
+  --date-format "%d/%m/%Y %H:%M"
 # Plot ->
 flexmeasures show beliefs \
   --sensor 3 \
@@ -208,7 +212,9 @@ flexmeasures show beliefs \
 #   --sensor 4 \
 #   --source rowan \
 #   --unit MW \
-#   --timezone Europe/Dublin 
+#   --timezone Europe/Dublin \
+#   --do-not-resample \
+#   --date-format "%d/%m/%Y %H:%M"
 # # Plot ->
 # flexmeasures show beliefs \
 #   --sensor 2 \
