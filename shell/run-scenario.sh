@@ -4,6 +4,12 @@
 START=2023-01-01T00:00:00+00:00
 DURATION=P7D # 7 Days
 
+SITE_POWER_CAPACITY_MW=1.25
+SITE_PRODUCTION_CAPACITY_MW=0
+SITE_CONSUMPTION_CAPACITY_MW=1.1
+ROUNDTRIP_EFFICIENCY=0.9
+INITIAL_SOC=0.1
+
 BATTERY_CAPACITY_MW=0.5
 BATTERY_MIN_SOC_MWH=0.15 # = 10% * 1.5MWh
 BATTERY_MAX_SOC_MWH=1.35 # = 90% * 1.5MWh
@@ -78,9 +84,14 @@ flexmeasures add schedule for-storage \
     --consumption-price-sensor 1 \
     --production-price-sensor 2 \
     --inflexible-device-sensor 3 \
-    --site-power-capacity $BATTERY_CAPACITY_MW \
+    --site-power-capacity $SITE_POWER_CAPACITY_MW \
+    --site-production-capacity $SITE_PRODUCTION_CAPACITY_MW \
+    --site-consumption-capacity $SITE_CONSUMPTION_CAPACITY_MW \
+    --power-power-capacity $BATTERY_CAPACITY_MW \
     --soc-min $BATTERY_SOC_MIN_MWH \
     --soc-max $BATTERY_SOC_MAX_MWH \
+    --soc-at-start $INITIAL_SOC \
+    --roundtrip-efficiency $ROUNDTRIP_EFFICIENCY \
     --start $START \
     --duration $DURATION \
     --soc-at-start 50% \
