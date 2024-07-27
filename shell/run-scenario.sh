@@ -13,9 +13,9 @@ INITIAL_SOC=0.1
 BATTERY_CAPACITY_MW=0.5
 BATTERY_MIN_SOC_MWH=0.15 # = 10% * 1.5MWh
 BATTERY_MAX_SOC_MWH=1.35 # = 90% * 1.5MWh
-FEED_IN_PRICE_EUR_PER_MWH=./fixed_price_feed_in.csv
-FEED_OUT_PRICE_EUR_PER_MWH=./fixed_price_feed_out.csv
-SOLAR_MW=./mean_solar.csv
+FEED_IN_PRICE_EUR_PER_MWH=./data/fixed_price_feed_in.csv
+FEED_OUT_PRICE_EUR_PER_MWH=./data/fixed_price_feed_out.csv
+SOLAR_MW=./data/mean_solar.csv
 
 
 # Create DataSource
