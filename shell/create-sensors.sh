@@ -19,13 +19,6 @@ flexmeasures add user \
 flexmeasures add initial-structure
 
 
-# Globals
-# -------
-
-START=2023-01-01T00:00:00+00:00
-DURATION=P7D # 7 Days
-
-
 # Authenticate
 # ------------
 TOKEN=$(curl \
@@ -89,9 +82,17 @@ curl \
     "parent_asset_id": 1,
     "latitude": 53.3498,
     "longitude": 6.2603,
-    "attributes": "{\"capacity_in_mw\": 1.5, \"min_soc_in_mwh\": 0.15, \"max_soc_in_mwh\": 1.35}"
   }' \
   http://localhost:5000/api/v3_0/assets
+
+# ********************************************************************
+# Instead of defining Battery attributes like ...
+# capacity_in_mw
+# min_soc_in_mwh
+# min_soc_in_mwh
+# ... on the Battery Sensor we're passing them instead as parameters
+# to the schedule run!
+# ********************************************************************
 
 
 # Create TransmissionZone Asset
@@ -118,20 +119,33 @@ flexmeasures add asset \
 # PT1H = hourly 
 # ************************************************
 
-# Sensor = ElectricityPrices
+# Sensor = FeedInElectricityPrices
 # Asset = TransmissionZone
 curl \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
   {
-      "name": "night/day tarriff",
+      "name": "feed-in price",
       "event_resolution": "PT15M",
       "unit": "EUR/MWh",
       "generic_asset_id": 4
   }' \
   http://localhost:5000/api/v3_0/sensors
 
+# Sensor = FeedOutElectricityPrices
+# Asset = TransmissionZone
+curl \
+  --header "Content-Type: application/json" \
+  --header "Authorization: $TOKEN" \
+  --data '
+  {
+      "name": "feed-out price",
+      "event_resolution": "PT15M",
+      "unit": "EUR/MWh",
+      "generic_asset_id": 4
+  }' \
+  http://localhost:5000/api/v3_0/sensors
 
 # Sensor = BatteryDischarge
 # Asset = Battery
@@ -175,68 +189,3 @@ curl \
 #   }' \
 #   http://localhost:5000/api/v3_0/sensors
 
-
-# Create DataSource
-# -----------------
-
-# Sensor = ElectricityPrices
-flexmeasures add beliefs ./fixed_price_feed_in.csv \
-  --sensor 1 \
-  --source rowan \
-  --unit EUR/MWh \
-  --timezone Europe/Dublin \
-  --do-not-resample \
-  --date-format "%d/%m/%Y %H:%M"
-# Plot ->
-flexmeasures show beliefs \
-  --sensor 1 \
-  --start $START \
-  --duration $DURATION
-
-# Sensor = SolarGeneration
-flexmeasures add beliefs ./mean_solar.csv \
-  --sensor 3 \
-  --source rowan \
-  --unit MW \
-  --timezone Europe/Dublin \
-  --do-not-resample \
-  --date-format "%d/%m/%Y %H:%M"
-# Plot ->
-flexmeasures show beliefs \
-  --sensor 3 \
-  --start $START \
-  --duration $DURATION
-
-# # Sensor = BuildingDemand
-# flexmeasures add beliefs ./demand.csv \
-#   --sensor 4 \
-#   --source rowan \
-#   --unit MW \
-#   --timezone Europe/Dublin \
-#   --do-not-resample \
-#   --date-format "%d/%m/%Y %H:%M"
-# # Plot ->
-# flexmeasures show beliefs \
-#   --sensor 2 \
-#   --start $START \
-#   --duration $DURATION
-
-
-# Schedule the Battery
-# --------------------
-
-# --consumption-price-sensor = ElectricityPrices
-# --inflexible-device-sensor = SolarGeneration
-flexmeasures add schedule for-storage \
-    --sensor 2 \
-    --consumption-price-sensor 1 \
-    --inflexible-device-sensor 3 \
-    --start $START \
-    --duration $DURATION \
-    --soc-at-start 50% \
-    --roundtrip-efficiency 90%
-# Plot ->
-flexmeasures show beliefs \
-  --sensor 2 \
-  --start $START \
-  --duration $DURATION
