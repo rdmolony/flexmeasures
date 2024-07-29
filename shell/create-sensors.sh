@@ -1,5 +1,11 @@
+# Install
+# -------
+
 apt-get install jq # for parsing JSON
 
+
+# Create Initial Database Structure
+# ---------------------------------
 
 flexmeasures db-ops reset
 
@@ -22,6 +28,7 @@ flexmeasures add initial-structure
 # Authenticate
 # ------------
 TOKEN=$(curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --data '
   {
@@ -41,6 +48,7 @@ flexmeasures show asset-types
 
 # Asset = Building
 curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
@@ -56,6 +64,7 @@ curl \
 # Asset = Solar
 # Parent = Building
 curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
@@ -72,6 +81,7 @@ curl \
 # Asset = Battery
 # Parent = Building
 curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
@@ -81,14 +91,13 @@ curl \
     "account_id": 1,
     "parent_asset_id": 1,
     "latitude": 53.3498,
-    "longitude": 6.2603,
+    "longitude": 6.2603
   }' \
   http://localhost:5000/api/v3_0/assets
 
 # ********************************************************************
-# Instead of defining Battery attributes like ...
-# capacity_in_mw
-# min_soc_in_mwh
+# capacity_in_mw is passed as a parameter to the battery schedule ...
+# 
 # min_soc_in_mwh
 # ... on the Battery Sensor we're passing them instead as parameters
 # to the schedule run!
@@ -122,6 +131,7 @@ flexmeasures add asset \
 # Sensor = FeedInElectricityPrices
 # Asset = TransmissionZone
 curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
@@ -136,6 +146,7 @@ curl \
 # Sensor = FeedOutElectricityPrices
 # Asset = TransmissionZone
 curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
@@ -150,6 +161,7 @@ curl \
 # Sensor = BatteryDischarge
 # Asset = Battery
 curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
@@ -164,6 +176,7 @@ curl \
 # Sensor = SolarGeneration
 # Asset = Solar
 curl \
+  --request POST \
   --header "Content-Type: application/json" \
   --header "Authorization: $TOKEN" \
   --data '
@@ -178,6 +191,7 @@ curl \
 # # Sensor = BuildingDemand
 # # Asset = Building
 # curl \
+#   --request POST \
 #   --header "Content-Type: application/json" \
 #   --header "Authorization: $TOKEN" \
 #   --data '
