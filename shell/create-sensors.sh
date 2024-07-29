@@ -128,21 +128,6 @@ flexmeasures add asset \
 # PT1H = hourly 
 # ************************************************
 
-# Sensor = FeedInElectricityPrices
-# Asset = TransmissionZone
-curl \
-  --request POST \
-  --header "Content-Type: application/json" \
-  --header "Authorization: $TOKEN" \
-  --data '
-  {
-      "name": "feed-in price",
-      "event_resolution": "PT15M",
-      "unit": "EUR/MWh",
-      "generic_asset_id": 4
-  }' \
-  http://localhost:5000/api/v3_0/sensors
-
 # Sensor = FeedOutElectricityPrices
 # Asset = TransmissionZone
 curl \
@@ -187,19 +172,3 @@ curl \
     "generic_asset_id": 2
   }' \
   http://localhost:5000/api/v3_0/sensors
-
-# # Sensor = BuildingDemand
-# # Asset = Building
-# curl \
-#   --request POST \
-#   --header "Content-Type: application/json" \
-#   --header "Authorization: $TOKEN" \
-#   --data '
-#   {
-#     "name": "power",
-#     "event_resolution": "PT15M",
-#     "unit": "MW",
-#     "generic_asset_id": 1
-#   }' \
-#   http://localhost:5000/api/v3_0/sensors
-
