@@ -19,10 +19,6 @@ BATTERY_CAPACITY_MW=0.5
 BATTERY_MIN_SOC_MWH=1.35 # = 10% * 1.5MWh
 BATTERY_MAX_SOC_MWH=0.15 # = 90% * 1.5MWh
 
-FEED_IN_PRICE_EUR_PER_MWH=./data/fixed_price_feed_in.csv
-FEED_OUT_PRICE_EUR_PER_MWH=./data/fixed_price_feed_out.csv
-SOLAR_MW=./data/mean_solar.csv
-
 
 # Authenticate
 # ------------
@@ -38,53 +34,6 @@ TOKEN=$(curl \
   | jq '.auth_token' \
   | sed 's|"||g' \
   )
-
-
-# Create DataSource
-# -----------------
-
-# Sensor = FeedInElectricityPrices
-flexmeasures add beliefs $FEED_IN_PRICE_EUR_PER_MWH \
-  --sensor $FEED_IN_PRICE_ID \
-  --source rowan \
-  --unit EUR/MWh \
-  --timezone Europe/Dublin \
-  --do-not-resample \
-  --date-format "%d/%m/%Y %H:%M"
-# Plot ->
-flexmeasures show beliefs \
-  --sensor $FEED_IN_PRICE_ID \
-  --start $START \
-  --duration $DURATION
-
-# Sensor = FeedOutElectricityPrices
-flexmeasures add beliefs $FEED_OUT_PRICE_EUR_PER_MWH \
-  --sensor $FEED_OUT_PRICE_ID \
-  --source rowan \
-  --unit EUR/MWh \
-  --timezone Europe/Dublin \
-  --do-not-resample \
-  --date-format "%d/%m/%Y %H:%M"
-# Plot ->
-flexmeasures show beliefs \
-  --sensor $FEED_OUT_PRICE_ID \
-  --start $START \
-  --duration $DURATION
-
-# Sensor = SolarGeneration
-flexmeasures add beliefs $SOLAR_MW \
-  --sensor $SOLAR_ID \
-  --source rowan \
-  --unit MW \
-  --timezone Europe/Dublin \
-  --do-not-resample \
-  --date-format "%d/%m/%Y %H:%M"
-# Plot ->
-flexmeasures show beliefs \
-  --sensor $SOLAR_ID \
-  --start $START \
-  --duration $DURATION
-
 
 # Update Battery SOC
 # ------------------
