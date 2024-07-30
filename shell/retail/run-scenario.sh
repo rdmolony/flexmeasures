@@ -17,10 +17,10 @@ SITE_CONSUMPTION_CAPACITY_MW=0.25
 ROUNDTRIP_EFFICIENCY=90%
 INITIAL_SOC=10%
 
-BATTERY_POWER_MW=0.075
+BATTERY_POWER_MW=0.075MW
 BATTERY_ENERGY_MWH=0.225
-BATTERY_MIN_SOC_MWH=0.0225 # = 10% * BATTERY_ENERGY_MWH
-BATTERY_MAX_SOC_MWH=0.190 # = 90% * BATTERY_ENERGY_MWH
+BATTERY_MIN_SOC=0.1 # = 10%
+BATTERY_MAX_SOC=0.9 # = 90%
 
 
 # Create DataSource
@@ -32,7 +32,6 @@ flexmeasures add beliefs $FEED_IN_PRICE_EUR_PER_MWH \
   --source rowan \
   --unit EUR/MWh \
   --timezone Europe/Dublin \
-  --do-not-resample \
   --date-format "%d/%m/%Y %H:%M"
 # Plot ->
 flexmeasures show beliefs \
@@ -46,7 +45,6 @@ flexmeasures add beliefs $SOLAR_MW \
   --source rowan \
   --unit MW \
   --timezone Europe/Dublin \
-  --do-not-resample \
   --date-format "%d/%m/%Y %H:%M"
 # Plot ->
 flexmeasures show beliefs \
@@ -102,10 +100,8 @@ TOKEN=$(curl \
 # *********************************************************************
 
 CONTENT=$(jq \
-  --arg capacity $BATTERY_POWER_MW \
-  --arg min $BATTERY_MIN_SOC_MWH \
-  --arg max $BATTERY_MAX_SOC_MWH \
-  -n '{capacity_in_mw: $capacity|tonumber, max_soc_in_mwh: $max|tonumber}'
+  --arg max $BATTERY_ENERGY_MWH \
+  -n '{max_soc_in_mwh: $max|tonumber}'
 )
 JSON=$(jq \
   --arg attributes "$CONTENT" \
@@ -129,9 +125,13 @@ flexmeasures add schedule for-storage \
     --start $START \
     --duration $DURATION \
     --soc-at-start $INITIAL_SOC \
-    --roundtrip-efficiency $ROUNDTRIP_EFFICIENCY 
-# Plot ->
-flexmeasures show beliefs \
-  --sensor $BATTERY_ID \
-  --start $START \
-  --duration $DURATION
+    --soc-min $BATTERY_MIN_SOC \
+    --soc-max $BATTERY_MAX_SOC \
+    --roundtrip-efficiency $ROUNDTRIP_EFFICIENCY \
+    --storage-power-capacity $BATTERY_POWER_MW
+    
+# # Plot ->
+# flexmeasures show beliefs \
+#   --sensor $BATTERY_ID \
+#   --start $START \
+#   --duration $DURATION
