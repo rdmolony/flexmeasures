@@ -71,6 +71,7 @@ services:
       # the 1st mount point is for running the FlexMeasures CLI, the 2nd for gunicorn
       - ./flexmeasures-instance/:/usr/var/flexmeasures-instance/:ro
       - ./flexmeasures-instance/:/app/instance/:ro
+      - .:/app/
     entrypoint: ["/bin/sh", "-c"]
     command:
     - |
