@@ -95,14 +95,6 @@ curl \
   }' \
   http://localhost:5000/api/v3_0/assets
 
-# ********************************************************************
-# capacity_in_mw is passed as a parameter to the battery schedule ...
-# 
-# min_soc_in_mwh
-# ... on the Battery Sensor we're passing them instead as parameters
-# to the schedule run!
-# ********************************************************************
-
 
 # Create TransmissionZone Asset
 # -----------------------------
@@ -127,6 +119,21 @@ flexmeasures add asset \
 # event_resolution = time interval between beliefs
 # PT1H = hourly 
 # ************************************************
+
+# Sensor = FeedInElectricityPrices
+# Asset = TransmissionZone
+curl \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --header "Authorization: $TOKEN" \
+  --data '
+  {
+      "name": "feed-in price",
+      "event_resolution": "PT15M",
+      "unit": "EUR/MWh",
+      "generic_asset_id": 4
+  }' \
+  http://localhost:5000/api/v3_0/sensors
 
 # Sensor = FeedOutElectricityPrices
 # Asset = TransmissionZone
