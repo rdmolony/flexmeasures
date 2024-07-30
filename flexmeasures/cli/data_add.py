@@ -690,14 +690,17 @@ def add_beliefs(
     
     sample_timestamp_str = pd.read_csv(file, skiprows=1, nrows=1, header=None).iloc[0,0]
     try:
-        datetime.strptime(sample_timestamp_str, datetime_format)
+        datetime.strptime(sample_timestamp_str, date_format)
     except Exception as e:
         raise ValueError(
-            f"The timestamps in '{file}' do not match the expected date_format '{date_format}'"
-            " Please specify another --datetime-format"
-            " Example: 31/01/22 23:59:59 = %d/%m/%y %H:%M:%S"
+            f"The timestamps in '{file}' do not match the expected date_format!."
+            f" Got '{sample_timestamp_str}'."
+            f" Expected  '{date_format}'."
+            " Please specify another --datetime-format,"
+            " Example: '31/01/22 23:59:59' = '%d/%m/%y %H:%M:%S'."
             " For more information see"
             " https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior"
+            f" | Full Error: {e}"
         ) from e
     
     bdf = tb.read_csv(
