@@ -125,7 +125,7 @@ class MetaStorageScheduler(Scheduler):
             beliefs_before=belief_time,
         )
 
-        breakpoint()
+        
 
         # Check for known prices or price forecasts, trimming planning window accordingly
         up_deviation_prices, (start, end) = get_prices(
@@ -627,7 +627,7 @@ class StorageScheduler(MetaStorageScheduler):
         :param skip_validation: If True, skip validation of constraints specified in the data.
         :returns:               The computed schedule.
         """
-        breakpoint()
+        
         (
             sensor,
             start,

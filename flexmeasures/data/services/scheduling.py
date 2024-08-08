@@ -266,7 +266,7 @@ def make_schedule(
     """
     # https://docs.sqlalchemy.org/en/13/faq/connections.html#how-do-i-use-engines-connections-sessions-with-python-multiprocessing-or-os-fork
     db.engine.dispose()
-    breakpoint()
+    
 
     if sensor_id is not None:
         current_app.logger.warning(
