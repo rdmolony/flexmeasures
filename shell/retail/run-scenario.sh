@@ -11,9 +11,9 @@ BATTERY_ID=3
 FEED_IN_PRICE_EUR_PER_MWH=./data/fixed_btp_feed_out.csv
 SOLAR_MW=./data/mid_solar.csv
 
-SITE_POWER_CAPACITY_MW=0.25
-SITE_PRODUCTION_CAPACITY_MW=0
-SITE_CONSUMPTION_CAPACITY_MW=0.25
+SITE_POWER_CAPACITY_MW=0.25MW
+SITE_PRODUCTION_CAPACITY_MW=0MW
+SITE_CONSUMPTION_CAPACITY_MW=0.25MW
 ROUNDTRIP_EFFICIENCY=90%
 INITIAL_SOC=10%
 
@@ -69,29 +69,8 @@ TOKEN=$(curl \
   )
 
 
-# Update Battery SOC
-# ------------------
-
-# *********************************************************************
-# Set maximum consumption/production power at the grid connection point
-# on the Asset
-# https://flexmeasures.readthedocs.io/en/latest/features/scheduling.html
-# *********************************************************************
-
-# CONTENT=$(jq \
-#   --arg capacity $SITE_POWER_CAPACITY_MW \
-#   -n '{capacity_in_mw: $capacity|tonumber}'
-# )
-# JSON=$(jq \
-#   --arg attributes "$CONTENT" \
-#   -n '{attributes: $attributes}'
-# )
-# curl \
-#   --request PATCH \
-#   --header "Content-Type: application/json" \
-#   --header "Authorization: $TOKEN" \
-#   --data "$JSON" \
-#   "http://localhost:5000/api/v3_0/assets/$BATTERY_ID"
+# Update Battery Max SOC
+# ----------------------
 
 # *********************************************************************
 # Set device-level power
@@ -125,13 +104,26 @@ flexmeasures add schedule for-storage \
     --start $START \
     --duration $DURATION \
     --soc-at-start $INITIAL_SOC \
-    --soc-min $BATTERY_MIN_SOC \
-    --soc-max $BATTERY_MAX_SOC \
     --roundtrip-efficiency $ROUNDTRIP_EFFICIENCY \
     --storage-power-capacity $BATTERY_POWER_MW
+
+# flexmeasures add schedule for-storage \
+#     --sensor $BATTERY_ID \
+#     --consumption-price-sensor $FEED_IN_PRICE_ID \
+#     --inflexible-device-sensor $SOLAR_ID \
+#     --start $START \
+#     --duration $DURATION \
+#     --soc-at-start $INITIAL_SOC \
+#     --soc-min $BATTERY_MIN_SOC \
+#     --soc-max $BATTERY_MAX_SOC \
+#     --roundtrip-efficiency $ROUNDTRIP_EFFICIENCY \
+#     --storage-power-capacity $BATTERY_POWER_MW \
+#     --site-power-capacity $SITE_POWER_CAPACITY_MW \
+#     --site-production-capacity $SITE_PRODUCTION_CAPACITY_MW \
+#     --site-consumption-capacity $SITE_CONSUMPTION_CAPACITY_MW
     
-# # Plot ->
-# flexmeasures show beliefs \
-#   --sensor $BATTERY_ID \
-#   --start $START \
-#   --duration $DURATION
+# Plot ->
+flexmeasures show beliefs \
+  --sensor $BATTERY_ID \
+  --start $START \
+  --duration $DURATION
