@@ -513,7 +513,7 @@ def add_source(name: str, model: str, version: str, source_type: str):
 @click.option(
     "--date-format",
     type=str,
-    default=r"%Y-%m-%d %H:%M:%s",
+    default=None,
     help="Format to use for parsing dates when used in conjunction with parse_dates."
     "The strftime to parse time, e.g. \"%d/%m/%Y\"."
     "See strftime documentation for more information on choices",
@@ -687,21 +687,22 @@ def add_beliefs(
     filter_by_column = (
         dict(zip(filter_columns, filter_values)) if filter_columns else None
     )
-    
-    sample_timestamp_str = pd.read_csv(file, skiprows=1, nrows=1, header=None).iloc[0,0]
-    try:
-        datetime.strptime(sample_timestamp_str, date_format)
-    except Exception as e:
-        raise ValueError(
-            f"The timestamps in '{file}' do not match the expected date_format!."
-            f" Got '{sample_timestamp_str}'."
-            f" Expected  '{date_format}'."
-            " Please specify another --datetime-format,"
-            " Example: '31/01/22 23:59:59' = '%d/%m/%y %H:%M:%S'."
-            " For more information see"
-            " https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior"
-            f" | Full Error: {e}"
-        ) from e
+
+    if date_format:
+        sample_timestamp_str = pd.read_csv(file, skiprows=1, nrows=1, header=None).iloc[0,0]
+        try:
+            datetime.strptime(sample_timestamp_str, date_format)
+        except Exception as e:
+            raise ValueError(
+                f"The timestamps in '{file}' do not match the expected date_format!."
+                f" Got '{sample_timestamp_str}'."
+                f" Expected  '{date_format}'."
+                " Please specify another --datetime-format,"
+                " Example: '31/01/22 23:59:59' = '%d/%m/%y %H:%M:%S'."
+                " For more information see"
+                " https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior"
+                f" | Full Error: {e}"
+            ) from e
     
     bdf = tb.read_csv(
         file,
